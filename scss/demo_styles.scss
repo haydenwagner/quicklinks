@@ -1,0 +1,114 @@
+$small-screen:  481px;
+$medium-screen: 768px;
+$large-screen:  960px;
+
+
+
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/LatoLatin-Regular.ttf') format('truetype'),
+}
+
+@font-face {
+  font-family: 'Raleway';
+  src: url('../fonts/Raleway-Regular.ttf') format('truetype'); /* IE6-IE8 */
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Raleway';
+  src: url('../fonts/Raleway-Medium.ttf') format('truetype'); /* IE6-IE8 */
+  font-style: normal;
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Raleway';
+  src: url('../fonts/Raleway-Bold.ttf') format('truetype'); /* IE6-IE8 */
+  font-style: normal;
+  font-weight: 700;
+}
+
+
+
+a {
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: Raleway;
+  color: #303030;
+  line-height: 1.2;
+}
+
+p,
+h1,
+h2,
+h3,
+h4 {
+  @media screen and (max-width: $large-screen) {
+    padding: 0 20px;
+  }
+
+  @media screen and (max-width: $small-screen) {
+    padding: 0 10px;
+  }
+}
+
+h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 25px 0 20px;
+}
+
+h2 {
+  font-size: 28px;
+  font-weight: 500;
+  margin: 30px 0 20px;
+}
+
+h3 {
+  font-size: 26px;
+  font-weight: 400;
+  margin: 30px 0 20px;
+  font-style: italic; //change
+}
+
+h4 {
+  font-size: 24px;
+  font-weight: 400;
+  margin: 30px 0 20px;
+  font-style: italic; //change
+}
+
+p {
+  font-family: lato;
+  font-size: 18px;
+  line-height: 1.6;
+  margin: 20px 0;
+  color: #303030;
+}
+
+.container {
+  height: calc( 100% );
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 50px 50px;
+  background: #fff;
+
+  @media screen and (max-width: $medium-screen) {
+    padding-top: 50px;
+    height: calc( 100% - 50px );
+  }
+
+  @media screen and (max-width: $small-screen) {
+    padding-top: 50px ;
+    height: calc( 100% - 50px );
+  }
+}
