@@ -1,13 +1,22 @@
 quicklinks = {
 
-  scrollLocation: 0,
-  smallWindow: false,
-  largeWindow: false,
+  scrollLocation: 0, //holds page scroll val
+  smallWindow: false, //if user window is smaller than 980px
+  largeWindow: false, //if user window is smaller than 980px
 
+
+
+  /**
+   * Initializes quicklinks plugin, gets page color determined by header
+   */
   setUp: function() {
     var windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
     this.div = $( '.quicklinks' )[0];
+
+    this.div.addEventListener('touchmove', function preventBodyScroll(e){
+      e.preventDefault();
+    }, false);
 
     //get color of header of page--will switch between about/project/contact
     $( document ).ready( function() {
@@ -19,7 +28,6 @@ quicklinks = {
       if ( quicklinks.mobileButtonSvg ) quicklinks.mobileButtonSvg.style.fill = quicklinks.color;
     });
 
-    //
     if ( windowWidth < 960 ) {
       this.smallWindow = true;
     } else {
@@ -30,104 +38,44 @@ quicklinks = {
     this.addMobileButtonListeners();
   },
 
+
+
+  /**
+   * Gets all header elements on page and gives class and listeners
+   */
   pushHeaders: function() {
     var jqHeaders = $("h1, h2, h3, h4, h5, h6");
+
     for ( var i = -1; i < jqHeaders.length; i++ ) {
       var p = document.createElement("p");
 
       if ( i === -1 ) {
         p.innerHTML = "Top";
         p.className = "quicklinks_top";
+
         quicklinks.div.appendChild( p );
         quicklinks.addClickListeners( p, "top" );
       } else {
         p.innerHTML = jqHeaders[i].innerHTML;
         p.className = "quicklinks_" + jqHeaders[i].localName;
+
         if ( jqHeaders[i].id ) {
           p.id = jqHeaders[i].id;
         }
+
         quicklinks.div.appendChild( p );
         quicklinks.addClickListeners( p, jqHeaders[i] );
       }
     }
-
-  },
-
-
-  addMobileButtonListeners: function() {
-    var el = this.mobileButton = document.getElementsByClassName( "quicklinks_mobile-button" )[0];
-    if ( this.smallWindow === true ) this.showMobileButton();
-    var svg = quicklinks.mobileButtonSvg = $( el ).children('svg').toArray()[0];
-
-    quicklinks.divDisplay = $( quicklinks.div ).css("display");
-
-    $( el ).click(function() {
-      console.log( quicklinks.divDisplay );
-      if ( quicklinks.divDisplay === "none" ) {
-        //$( quicklinks.div ).css("display", "block");
-        // $( quicklinks.div ).stop().fadeIn();
-        // $( el ).load( "assets/svgs/menu--quicklinks--close.svg");
-        // el.style.background = quicklinks.color;
-        // quicklinks.divDisplay = "block";
-        quicklinks.openMobileQuicklinks( this );
-      } else {
-        quicklinks.closeMobileQuicklinks( this );
-        //$( quicklinks.div ).css("display", "none");
-        // $( quicklinks.div ).stop().fadeOut();
-        // $( el ).load( "assets/svgs/menu--quicklinks.svg", function() {
-        //   console.log( $( el ).children('svg') );
-        //   $( el ).children('svg')[0].style.fill = quicklinks.color;
-        // });
-        // el.style.background = "white";
-        // quicklinks.divDisplay = "none";
-      }
-    });
-  },
-
-  showMobileButton: function() {
-    this.mobileButton.style.display = "block";
-  },
-
-  hideMobileButton: function() {
-    this.mobileButton.style.display = "none";
-    this.mobileButton.style.background = "white";
-    $( this.mobileButton ).load( "assets/svgs/menu--quicklinks.svg", function() {
-      this.children('svg')[0].style.fill = quicklinks.color;
-    });
-  },
-
-
-  openMobileQuicklinks: function( el ) {
-    if ( el === undefined ) el = document.getElementsByClassName( "quicklinks_mobile-button" )[0];
-
-    $( quicklinks.div ).stop().fadeIn();
-    $( el ).load( "assets/svgs/menu--quicklinks--close.svg");
-    el.style.background = quicklinks.color;
-
-    if ( navMenu ) navMenu.hideMenu();
-    quicklinks.divDisplay = "block";
-  },
-
-
-  closeMobileQuicklinks: function( el ) {
-    if ( quicklinks.largeWindow ) return;
-    if ( el === undefined ) el = document.getElementsByClassName( "quicklinks_mobile-button" )[0];
-            //$( quicklinks.div ).css("display", "none");
-    $( quicklinks.div ).stop().fadeOut();
-
-    $( el ).load( "assets/svgs/menu--quicklinks.svg", function() {
-      console.log( $( el ).children('svg') );
-      $( el ).children('svg')[0].style.fill = quicklinks.color;
-    });
-
-    el.style.background = "white";
-    quicklinks.divDisplay = "none";
   },
 
 
 
-
-
+  /**
+   * Adds listeners to links created in quicklinks panel and associates a scroll location with each link's element.
+   * @param {object} link - Clickable link created in quicklinks panel
+   * @param {object/string} el - Element associated with link that page will scroll to when link is clicked. Special case "top" goes to scroll position 0
+   */
   addClickListeners: function( link, el ) {
     if ( el === "top" ) {
       $( link ).click(function (){
@@ -138,10 +86,6 @@ quicklinks = {
         }, 500, function() {
           quicklinks.inMotion = false;
         });
-
-        // $('html, body').promise().done(function(){
-        //  quicklinks.inMotion = false;
-        //});
 
         quicklinks.scrollLocation = 0;
         quicklinks.changeSectionStyle( link, el );
@@ -154,9 +98,6 @@ quicklinks = {
         var location = el.offsetTop - ( el.offsetHeight * 3 );
 
         el.style.color = quicklinks.color;
-        //el.style.borderLeft = "4px solid " + quicklinks.color;
-        //el.style.paddingLeft = "5px";
-
 
         quicklinks.inMotion = true;
         $('html, body').stop().animate({
@@ -165,10 +106,6 @@ quicklinks = {
           quicklinks.inMotion = false;
         });
 
-        //$('html, body').promise().done(function(){
-        //  quicklinks.inMotion = false;
-        //});
-
         quicklinks.scrollLocation = location;
         quicklinks.changeSectionStyle( link, el );
         quicklinks.changeLinkStyle( link );
@@ -176,9 +113,94 @@ quicklinks = {
     }
   },
 
-  changeSectionStyle: function( link, el ) {
 
-    console.log ( "change section style");
+
+  /**
+   * Adds listener to mobile button that displays quicklinks
+   */
+  addMobileButtonListeners: function() {
+    var el = this.mobileButton = document.getElementsByClassName( "quicklinks_mobile-button" )[0];
+    var svg = quicklinks.mobileButtonSvg = $( el ).children('svg').toArray()[0];
+
+    if ( this.smallWindow === true ) this.showMobileButton();
+
+    quicklinks.divDisplay = $( quicklinks.div ).css("display");
+
+    $( el ).click(function() {
+      if ( quicklinks.divDisplay === "none" ) {
+        quicklinks.openMobileQuicklinks( this );
+      } else {
+        quicklinks.closeMobileQuicklinks( this );
+      }
+    });
+  },
+
+
+
+  /**
+   * Makes mobile button visible
+   */
+  showMobileButton: function() {
+    this.mobileButton.style.display = "block";
+  },
+
+
+
+  /**
+   * Makes mobile button invisible and changes inner svg element
+   */
+  hideMobileButton: function() {
+    this.mobileButton.style.display = "none";
+    this.mobileButton.style.background = "white";
+    $( this.mobileButton ).load( "assets/svgs/menu--quicklinks.svg", function() {
+      this.children('svg')[0].style.fill = quicklinks.color;
+    });
+  },
+
+
+
+  /**
+   * Opens the mobile version of the quicklinks panel
+   * @param  {object} el - Button that was touched/clicked
+   */
+  openMobileQuicklinks: function( el ) {
+    if ( el === undefined ) el = document.getElementsByClassName( "quicklinks_mobile-button" )[0];
+
+    $( quicklinks.div ).stop().fadeIn();
+    $( el ).load( "assets/svgs/menu--quicklinks--close.svg");
+    el.style.background = quicklinks.color;
+
+    if ( navMenu ) navMenu.hideMenu();
+    quicklinks.divDisplay = "block";
+  },
+
+
+
+  /**
+   * Closes the mobile version of the quicklinks panel
+   * @param  {object} el - Button that was touched/clicked
+   */
+  closeMobileQuicklinks: function( el ) {
+    if ( quicklinks.largeWindow ) return;
+    if ( el === undefined ) el = document.getElementsByClassName( "quicklinks_mobile-button" )[0];
+
+    $( quicklinks.div ).stop().fadeOut();
+
+    $( el ).load( "assets/svgs/menu--quicklinks.svg", function() {
+      $( el ).children('svg')[0].style.fill = quicklinks.color;
+    });
+
+    el.style.background = "white";
+    quicklinks.divDisplay = "none";
+  },
+
+
+  /**
+   * Changes the styling of header elements on the page. No style change for top.
+   * @param  {[object} link - Link touched/clicked in quicklinks panel
+   * @param  {object} el - Element associated with touched/clicked link, or "top"
+   */
+  changeSectionStyle: function( link, el ) {
     if ( el === "top") {
       if ( quicklinks.currEl ) {
         quicklinks.currEl.style.color = "#424242";
@@ -197,9 +219,13 @@ quicklinks = {
     }
   },
 
-  changeLinkStyle: function( el ) {
 
-    console.log( "change link style" );
+
+  /**
+   * Changes the quicklinks link styles if a link is touched/clicked
+   * @param  {object} el - The touched/clicked quicklinks link
+   */
+  changeLinkStyle: function( el ) {
     if ( quicklinks.currLink ) {
       $( quicklinks.currLink ).removeClass( "quicklinks--selected" );
       quicklinks.currLink.style.borderColor = "#424242";
@@ -211,13 +237,15 @@ quicklinks = {
     quicklinks.currLink = el;
   },
 
+
+
+  /**
+   * Returns quicklink links and page header elements to default styling on scroll
+   */
   scrollReset: function() {
     if ( quicklinks.inMotion === true ) {
-      console.log("stop reset");
       return;
     }
-
-    console.log("reset");
 
     var topScrollBuffer = quicklinks.scrollLocation - 5;
     var bottomScrollBuffer = quicklinks.scrollLocation + 5;
@@ -238,6 +266,11 @@ quicklinks = {
     }
   },
 
+
+
+  /**
+   * Handles switch to mobile interface on resize
+   */
   moveWithScrollSmallWindow: function() {
     $( '.quicklinks' ).css({
       "position": "fixed",
@@ -252,6 +285,11 @@ quicklinks = {
     this.largeWindow = false;
   },
 
+
+
+  /**
+   * Handles switch to desktop interface on resize
+   */
   moveWithScrollLargeWindow: function() {
     var windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
     if ( windowWidth < 960 ) return;
@@ -282,6 +320,10 @@ quicklinks = {
   },
 
 
+
+  /**
+   * Handles 'right' css value of desktop quicklinks panel
+   */
   setQuicklinksRight: function() {
     var windowWidth = document.body.clientWidth;
     var right = ( windowWidth - 860 ) / 2;
