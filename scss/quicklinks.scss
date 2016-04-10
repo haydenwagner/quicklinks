@@ -5,7 +5,7 @@ $large-screen:  960px;
 
 
 .quicklinks {
-  // cursor: pointer;
+  cursor: pointer;
   // min-width: 180px;
   // max-width: 215px;
   // float: right;
@@ -93,7 +93,6 @@ $large-screen:  960px;
     bottom: 30px;
     right: 30px;
     opacity: .95;
-    display: none;
 
     @media screen and (max-width: $medium-screen) {
       bottom: 15px;

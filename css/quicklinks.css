@@ -1,4 +1,5 @@
 .quicklinks {
+  cursor: pointer;
   display: none;
   bottom: 0px;
   top: none;
@@ -59,8 +60,7 @@
     cursor: pointer;
     bottom: 30px;
     right: 30px;
-    opacity: .95;
-    display: none; }
+    opacity: .95; }
     @media screen and (max-width: 768px) {
       .quicklinks_mobile-button {
         bottom: 15px;
