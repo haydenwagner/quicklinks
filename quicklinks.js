@@ -1,7 +1,5 @@
 quicklinks = {
 
-  //scrollLocation: 0, //holds page scroll val
-
   /**
    * Initializes quicklinks plugin, gets page color determined by header
    */
@@ -128,19 +126,6 @@ quicklinks = {
 
 
 
-  // /**
-  //  * Makes mobile button invisible and changes inner svg element
-  //  */
-  // hideMobileButton: function() {
-  //   this.mobileButton.style.display = "none";
-  //   this.mobileButton.style.background = "white";
-  //   $( this.mobileButton ).load( "assets/svgs/menu--quicklinks.svg", function() {
-  //     this.children('svg')[0].style.fill = quicklinks.color;
-  //   });
-  // },
-
-
-
   /**
    * Opens the mobile version of the quicklinks panel
    * @param  {object} el - Button that was touched/clicked
@@ -247,70 +232,5 @@ quicklinks = {
       quicklinks.currLink = undefined;
     }
   },
-
-
-
-  // /**
-  //  * Handles switch to mobile interface on resize
-  //  */
-  // moveWithScrollSmallWindow: function() {
-  //   $( '.quicklinks' ).css({
-  //     "position": "fixed",
-  //     "top": "",
-  //     "bottom": "0px",
-  //     "right": "0px",
-  //     "display": "none"
-  //   });
-
-  //   quicklinks.divDisplay = "none";
-  //   this.smallWindow = true;
-  //   this.largeWindow = false;
-  // },
-
-
-
-  // /**
-  //  * Handles switch to desktop interface on resize
-  //  */
-  // moveWithScrollLargeWindow: function() {
-  //   var windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-  //   if ( windowWidth < 960 ) return;
-
-  //   if( $( window ).scrollTop() >= (navMenu.gradientHeight - 70 + 4) ) {
-  //     $( '.quicklinks' ).css({
-  //       "position": "fixed",
-  //       "top": "87px",
-  //       "margin": "0px",
-  //       "float": "none",
-  //       "display": "block"
-  //     });
-  //     quicklinks.setQuicklinksRight();
-  //   } else {
-  //     $( '.quicklinks' ).css({
-  //       "position": "relative",
-  //       "top": "",
-  //       "right": "",
-  //       "margin": "20px 0 0 0",
-  //       "float": "right",
-  //       "display": "block"
-  //     });
-  //   }
-
-  //   quicklinks.divDisplay = "block";
-  //   quicklinks.largeWindow = true;
-  //   quicklinks.smallWindow = false;
-  // // },
-
-
-
-  // /**
-  //  * Handles 'right' css value of desktop quicklinks panel
-  //  */
-  // setQuicklinksRight: function() {
-  //   var windowWidth = document.body.clientWidth;
-  //   var right = ( windowWidth - 860 ) / 2;
-
-  //   $( '.quicklinks' ).css("right", right);
-  // },
 
 };
