@@ -1,8 +1,8 @@
 quicklinks = {
 
   scrollLocation: 0, //holds page scroll val
-  smallWindow: false, //if user window is smaller than 980px
-  largeWindow: false, //if user window is smaller than 980px
+  // smallWindow: false, //if user window is smaller than 980px
+  // largeWindow: false, //if user window is smaller than 980px
 
 
 
@@ -10,29 +10,35 @@ quicklinks = {
    * Initializes quicklinks plugin, gets page color determined by header
    */
   setUp: function() {
-    var windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    //var windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
-    this.div = $( '.quicklinks' )[0];
+    //this.div = $( '.quicklinks' )[0];
+    //this.panel = $( 'body' ).append( '<div class="quicklinks"></div>' );//document.getElementsByClassName("quicklinks")[0];
+    this.panel = document.createElement('div');
+    this.panel.className = 'quicklinks';
+    document.body.appendChild(this.panel);
 
-    this.div.addEventListener('touchmove', function preventBodyScroll(e){
+    this.panel.addEventListener('touchmove', function preventBodyScroll(e){
       e.preventDefault();
     }, false);
 
-    //get color of header of page--will switch between about/project/contact
-    $( document ).ready( function() {
-      var test = $('.section').css("background");
-      var regEx = /[^)]*/;
-      var color = test.match( regEx );
-      color = color + ")";
-      quicklinks.color = color;
-      if ( quicklinks.mobileButtonSvg ) quicklinks.mobileButtonSvg.style.fill = quicklinks.color;
-    });
+    quicklinks.color = "green";
 
-    if ( windowWidth < 960 ) {
-      this.smallWindow = true;
-    } else {
-      this.largeWindow = true;
-    }
+    //get color of header of page--will switch between about/project/contact
+    // $( document ).ready( function() {
+    //   var test = $('.section').css("background");
+    //   var regEx = /[^)]*/;
+    //   var color = test.match( regEx );
+    //   color = color + ")";
+    //   quicklinks.color = color;
+    //   if ( quicklinks.mobileButtonSvg ) quicklinks.mobileButtonSvg.style.fill = quicklinks.color;
+    // });
+
+    // if ( windowWidth < 960 ) {
+    //   this.smallWindow = true;
+    // } else {
+    //   this.largeWindow = true;
+    // }
 
     this.pushHeaders();
     this.addMobileButtonListeners();
@@ -41,32 +47,53 @@ quicklinks = {
 
 
   /**
-   * Gets all header elements on page and gives class and listeners
+   * Gets all header elements on page and gives class and listeners, also makes 'top' page link
    */
-  pushHeaders: function() {
-    var jqHeaders = $("h1, h2, h3, h4, h5, h6");
+  pushHeaders: function(){
+    var pageHeaders = $("h1, h2, h3, h4, h5, h6").toArray();
 
-    for ( var i = -1; i < jqHeaders.length; i++ ) {
-      var p = document.createElement("p");
+    var topP = document.createElement("p");
+    topP.className = 'quicklinks_top';
+    topP.innerHTML = 'Top';
 
-      if ( i === -1 ) {
-        p.innerHTML = "Top";
-        p.className = "quicklinks_top";
+    topP.addEventListener('click', function topLinkClickAnon(){
+      quicklinks.topLinkClick(topP);
+    });
 
-        quicklinks.div.appendChild( p );
-        quicklinks.addClickListeners( p, "top" );
-      } else {
-        p.innerHTML = jqHeaders[i].innerHTML;
-        p.className = "quicklinks_" + jqHeaders[i].localName;
+    quicklinks.panel.appendChild(topP);
 
-        if ( jqHeaders[i].id ) {
-          p.id = jqHeaders[i].id;
-        }
+    for ( var i = 0; i < pageHeaders.length; i++ ) {
+      var headerP = document.createElement("p");
+      headerP.className = "quicklinks_" + pageHeaders[i].localName;
+      headerP.innerHTML = pageHeaders[i].innerHTML;
 
-        quicklinks.div.appendChild( p );
-        quicklinks.addClickListeners( p, jqHeaders[i] );
-      }
+      (function(j){
+        headerP.addEventListener('click', function headerLinkClickAnon(){
+          quicklinks.headerLinkClick(headerP,pageHeaders[j]);
+        });
+      })(i);
+
+      quicklinks.panel.appendChild(headerP);
     }
+  },
+
+  /**
+   * Adds click listener to the 'top' link that is present in every quicklinks panel
+   * @param {object} link - Clickable link created in quicklinks panel
+   * @param {object/string} el - Element associated with link that page will scroll to when link is clicked
+   */
+  topLinkClick: function(link){
+    quicklinks.inMotion = true;
+
+    $('html, body').stop().animate({
+      scrollTop: 0
+    }, 500, function() {
+      quicklinks.inMotion = false;
+    });
+
+    quicklinks.scrollLocation = 0;
+    quicklinks.changeSectionStyle( link, "top");
+    quicklinks.changeLinkStyle( link );
   },
 
 
@@ -76,41 +103,21 @@ quicklinks = {
    * @param {object} link - Clickable link created in quicklinks panel
    * @param {object/string} el - Element associated with link that page will scroll to when link is clicked. Special case "top" goes to scroll position 0
    */
-  addClickListeners: function( link, el ) {
-    if ( el === "top" ) {
-      $( link ).click(function (){
+  headerLinkClick: function( link, el ) {
+    var location = el.offsetTop - ( el.offsetHeight * 3 );
 
-        quicklinks.inMotion = true;
-        $('html, body').stop().animate({
-          scrollTop: 0
-        }, 500, function() {
-          quicklinks.inMotion = false;
-        });
+    el.style.color = quicklinks.color;
 
-        quicklinks.scrollLocation = 0;
-        quicklinks.changeSectionStyle( link, el );
-        quicklinks.changeLinkStyle( link );
-      });
-    }
-    else {
-      $( link ).click(function (){
+    quicklinks.inMotion = true;
+    $('html, body').stop().animate({
+        scrollTop: location
+    }, 500, function() {
+      quicklinks.inMotion = false;
+    });
 
-        var location = el.offsetTop - ( el.offsetHeight * 3 );
-
-        el.style.color = quicklinks.color;
-
-        quicklinks.inMotion = true;
-        $('html, body').stop().animate({
-            scrollTop: location
-        }, 500, function() {
-          quicklinks.inMotion = false;
-        });
-
-        quicklinks.scrollLocation = location;
-        quicklinks.changeSectionStyle( link, el );
-        quicklinks.changeLinkStyle( link );
-      });
-    }
+    quicklinks.scrollLocation = location;
+    quicklinks.changeSectionStyle( link, el );
+    quicklinks.changeLinkStyle( link );
   },
 
 
@@ -166,7 +173,7 @@ quicklinks = {
   openMobileQuicklinks: function( el ) {
     if ( el === undefined ) el = document.getElementsByClassName( "quicklinks_mobile-button" )[0];
 
-    $( quicklinks.div ).stop().fadeIn();
+    $( quicklinks.panel ).stop().fadeIn();
     $( el ).load( "assets/svgs/menu--quicklinks--close.svg");
     el.style.background = quicklinks.color;
 
@@ -184,7 +191,7 @@ quicklinks = {
     if ( quicklinks.largeWindow ) return;
     if ( el === undefined ) el = document.getElementsByClassName( "quicklinks_mobile-button" )[0];
 
-    $( quicklinks.div ).stop().fadeOut();
+    $( quicklinks.panel ).stop().fadeOut();
 
     $( el ).load( "assets/svgs/menu--quicklinks.svg", function() {
       $( el ).children('svg')[0].style.fill = quicklinks.color;
