@@ -1,12 +1,14 @@
 .quicklinks {
   cursor: pointer;
+  min-width: 180px;
+  max-width: 300px;
   display: none;
   bottom: 0px;
   top: none;
   position: fixed;
   bottom: 0px;
   right: 0px;
-  padding: 10px 10px 75px;
+  padding: 10px 20px 85px 20px;
   background: white;
   border-top: 3px solid #424242;
   border-left: 3px solid #424242;
@@ -19,12 +21,19 @@
   -ms-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent; }
+  @media screen and (max-width: 768px) {
+    .quicklinks {
+      padding: 10px 20px 75px 20px; } }
+  @media screen and (max-width: 481px) {
+    .quicklinks {
+      max-width: 215px; } }
   .quicklinks p {
     line-height: 1.2;
     padding-top: 2px;
     padding-left: 6px;
     font-size: 18px;
-    margin: 10px 0px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     color: #303030; }
     .quicklinks p:hover {
       padding-left: 3px;
