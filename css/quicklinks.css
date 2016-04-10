@@ -30,12 +30,6 @@
       border-left: 3px solid #424242;
       color: #424242;
       opacity: .8; }
-    @media screen and (max-width: 960px) {
-      .quicklinks p {
-        padding: 0 20px; } }
-    @media screen and (max-width: 481px) {
-      .quicklinks p {
-        padding: 0 10px; } }
   .quicklinks_top {
     font-style: italic; }
   .quicklinks_h1, .quicklinks_top {

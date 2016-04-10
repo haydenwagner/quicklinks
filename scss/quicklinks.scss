@@ -48,14 +48,6 @@ $large-screen:  960px;
       color: #424242;
       opacity: .8;
     }
-
-    @media screen and (max-width: $large-screen) {
-      padding: 0 20px;
-    }
-
-    @media screen and (max-width: $small-screen) {
-      padding: 0 10px;
-    }
   }
 
   &_top {
