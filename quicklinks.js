@@ -21,10 +21,10 @@ quicklinks = {
       e.preventDefault();
     }, false);
 
-
-
     document.body.appendChild(this.panel);
     document.body.appendChild(this.button);
+
+    window.addEventListener('scroll', this.scrollReset);
     this.pushHeaders();
     this.addMobileButtonListeners();
   },
@@ -146,7 +146,6 @@ quicklinks = {
     if ( el === undefined ) el = document.getElementsByClassName( "quicklinks_mobile-button" )[0];
 
     $( quicklinks.panel ).stop().fadeIn();
-    console.log(this);
     el.innerHTML = this.svgAssets[1];
     el.style.background = quicklinks.color;
 
@@ -224,15 +223,14 @@ quicklinks = {
    * Returns quicklink links and page header elements to default styling on scroll
    */
   scrollReset: function() {
-    if ( quicklinks.inMotion === true ) {
-      return;
-    }
+    if ( quicklinks.inMotion === true ) return;
 
     var topScrollBuffer = quicklinks.scrollLocation - 5;
     var bottomScrollBuffer = quicklinks.scrollLocation + 5;
     var currentLocation =  $( window ).scrollTop();
 
-    if ( quicklinks.inMotion || ( currentLocation >= topScrollBuffer && currentLocation <= bottomScrollBuffer ) ) return;
+    //return if within small buffer of +-5 from the elements scroll position
+    if ( currentLocation >= topScrollBuffer && currentLocation <= bottomScrollBuffer ) return;
 
     if ( quicklinks.currEl ) {
       quicklinks.currEl.style.color = "#424242";
