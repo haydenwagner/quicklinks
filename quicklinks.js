@@ -9,7 +9,7 @@ quicklinks = {
   /**
    * Initializes quicklinks plugin, gets page color determined by header
    */
-  setUp: function() {
+  setUp: function(color) {
     //var windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
     //this.div = $( '.quicklinks' )[0];
@@ -22,7 +22,7 @@ quicklinks = {
       e.preventDefault();
     }, false);
 
-    quicklinks.color = "green";
+    quicklinks.color = color;
 
     //get color of header of page--will switch between about/project/contact
     // $( document ).ready( function() {
@@ -67,11 +67,11 @@ quicklinks = {
       headerP.className = "quicklinks_" + pageHeaders[i].localName;
       headerP.innerHTML = pageHeaders[i].innerHTML;
 
-      (function(j){
+      (function(h,j){
         headerP.addEventListener('click', function headerLinkClickAnon(){
-          quicklinks.headerLinkClick(headerP,pageHeaders[j]);
+          quicklinks.headerLinkClick(h,pageHeaders[j]);
         });
-      })(i);
+      })(headerP, i);
 
       quicklinks.panel.appendChild(headerP);
     }
