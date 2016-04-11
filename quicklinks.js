@@ -5,28 +5,45 @@ quicklinks = {
     '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="59.951px" height="59.953px" viewBox="0 0 59.951 59.953" enable-background="new 0 0 59.951 59.953" xml:space="preserve"><g><path d="M17.849,21.385c6.906,6.906,13.812,13.812,20.718,20.718c2.281,2.282,5.817-1.254,3.535-3.535c-6.906-6.906-13.812-13.813-20.718-20.718C19.103,15.568,15.567,19.104,17.849,21.385L17.849,21.385z"/></g><g><path d="M21.4,42.022c6.906-6.906,13.812-13.812,20.718-20.718c2.282-2.282-1.254-5.817-3.535-3.535c-6.906,6.906-13.812,13.812-20.718,20.718C15.583,40.769,19.118,44.304,21.4,42.022L21.4,42.022z"/></g></svg>'
   ],
 
+  panelVisible: false,
+
   /**
-   * Initializes quicklinks plugin, gets page color determined by header
+   * Creates link panel and display button, prevents touch scrolling on panel from
+   * scrolling the whole page, adds scroll listener to window, and calls following functions
+   *
+   * @param {string} color - accent color for quicklink button, link elements, and page elements
    */
-  setUp: function(color) {
-    quicklinks.color = color;
+  setUp: function(color){
+    this.color = color;
+
     this.panel = document.createElement('div');
     this.panel.className = 'quicklinks';
-
-    this.button = document.createElement('div');
-    this.button.className = 'quicklinks_mobile-button';
-    this.button.innerHTML = this.svgAssets[0];
 
     this.panel.addEventListener('touchmove', function preventBodyScroll(e){
       e.preventDefault();
     }, false);
 
+    this.button = document.createElement('div');
+    this.button.className = 'quicklinks_mobile-button';
+    this.button.innerHTML = this.svgAssets[0];
+
+    this.button.addEventListener('click', function quicklinksButtonClickAnon(){
+      if ( quicklinks.panelVisible === false ) {
+        quicklinks.openMobileQuicklinks( this );
+      } else {
+        quicklinks.closeMobileQuicklinks( this );
+      }
+    });
+
+    this.svg = $( this.button ).children('svg').toArray()[0];
+    this.svg.style.fill = this.color;
+
     document.body.appendChild(this.panel);
     document.body.appendChild(this.button);
 
     window.addEventListener('scroll', this.scrollReset);
+
     this.pushHeaders();
-    this.addMobileButtonListeners();
   },
 
 
@@ -64,6 +81,7 @@ quicklinks = {
 
   /**
    * Adds click listener to the 'top' link that is present in every quicklinks panel
+   *
    * @param {object} link - Clickable link created in quicklinks panel
    * @param {object/string} el - Element associated with link that page will scroll to when link is clicked
    */
@@ -85,10 +103,11 @@ quicklinks = {
 
   /**
    * Adds listeners to links created in quicklinks panel and associates a scroll location with each link's element.
+   *
    * @param {object} link - Clickable link created in quicklinks panel
    * @param {object/string} el - Element associated with link that page will scroll to when link is clicked. Special case "top" goes to scroll position 0
    */
-  headerLinkClick: function( link, el ) {
+  headerLinkClick: function(link, el){
     var location = el.offsetTop - ( el.offsetHeight * 3 );
 
     el.style.color = quicklinks.color;
@@ -108,92 +127,58 @@ quicklinks = {
 
 
   /**
-   * Adds listener to mobile button that displays quicklinks
-   */
-  addMobileButtonListeners: function() {
-    var el = this.mobileButton = document.getElementsByClassName( "quicklinks_mobile-button" )[0];
-    var svg = quicklinks.mobileButtonSvg = $( el ).children('svg').toArray()[0];
-    svg.style.fill = this.color;
-    if ( this.smallWindow === true ) this.showMobileButton();
-
-    quicklinks.divDisplay = $( quicklinks.panel ).css("display");
-
-    $( el ).click(function() {
-      if ( quicklinks.divDisplay === "none" ) {
-        quicklinks.openMobileQuicklinks( this );
-      } else {
-        quicklinks.closeMobileQuicklinks( this );
-      }
-    });
-  },
-
-
-
-  /**
-   * Makes mobile button visible
-   */
-  showMobileButton: function() {
-    this.mobileButton.style.display = "block";
-  },
-
-
-
-  /**
    * Opens the mobile version of the quicklinks panel
+   *
    * @param  {object} el - Button that was touched/clicked
    */
-  openMobileQuicklinks: function( el ) {
-    if ( el === undefined ) el = document.getElementsByClassName( "quicklinks_mobile-button" )[0];
-
+  openMobileQuicklinks: function(el){
     $( quicklinks.panel ).stop().fadeIn();
+
     el.innerHTML = this.svgAssets[1];
     el.style.background = quicklinks.color;
 
-    quicklinks.divDisplay = "block";
+    quicklinks.panelVisible = true;
   },
 
 
 
   /**
    * Closes the mobile version of the quicklinks panel
+   *
    * @param  {object} el - Button that was touched/clicked
    */
-  closeMobileQuicklinks: function( el ) {
-    if ( quicklinks.largeWindow ) return;
-    if ( el === undefined ) el = document.getElementsByClassName( "quicklinks_mobile-button" )[0];
-
+  closeMobileQuicklinks: function(el){
     $( quicklinks.panel ).stop().fadeOut();
 
-    //$( el ).load( "assets/svgs/menu--quicklinks.svg", function() {
-
-    //});
     el.innerHTML = this.svgAssets[0];
     $( el ).children('svg')[0].style.fill = quicklinks.color;
-
     el.style.background = "white";
-    quicklinks.divDisplay = "none";
+
+    quicklinks.panelVisible = false;
   },
 
 
   /**
-   * Changes the styling of header elements on the page. No style change for top.
-   * @param  {[object} link - Link touched/clicked in quicklinks panel
-   * @param  {object} el - Element associated with touched/clicked link, or "top"
+   * Changes the styling of header elements on the page, and updates the currentEl
+   * property of the quicklinks object. No header element style change for a 'top selection'
+   *
+   * @param  {object} link - Link touched/clicked in quicklinks panel
+   * @param  {object/string} el - Element associated with touched/clicked link, or "top"
    */
-  changeSectionStyle: function( link, el ) {
-    if ( el === "top") {
-      if ( quicklinks.currEl ) {
+  changeSectionStyle: function(link, el){
+    if( el === "top"){
+      if( quicklinks.currEl ){
         quicklinks.currEl.style.color = "#424242";
         quicklinks.currEl = undefined;
-      } else {
+      }else{
         quicklinks.currEl = undefined;
       }
     }
-    else {
-      if ( quicklinks.currEl ) {
+    else{
+      if( quicklinks.currEl ){
         quicklinks.currEl.style.color = "#424242";
         quicklinks.currEl = el;
-      } else {
+      }else{
         quicklinks.currEl = el;
       }
     }
@@ -203,17 +188,20 @@ quicklinks = {
 
   /**
    * Changes the quicklinks link styles if a link is touched/clicked
+   *
    * @param  {object} el - The touched/clicked quicklinks link
    */
-  changeLinkStyle: function( el ) {
-    if ( quicklinks.currLink ) {
+  changeLinkStyle: function(el){
+    if( quicklinks.currLink ){
       $( quicklinks.currLink ).removeClass( "quicklinks--selected" );
       quicklinks.currLink.style.borderColor = "#424242";
       quicklinks.currLink.style.color = "#424242";
     }
+
     el.className += " quicklinks--selected";
     el.style.borderColor = quicklinks.color;
     el.style.color = quicklinks.color;
+
     quicklinks.currLink = el;
   },
 
@@ -223,22 +211,23 @@ quicklinks = {
    * Returns quicklink links and page header elements to default styling on scroll
    */
   scrollReset: function() {
-    if ( quicklinks.inMotion === true ) return;
+    if( quicklinks.inMotion === true ) return;
 
     var topScrollBuffer = quicklinks.scrollLocation - 5;
     var bottomScrollBuffer = quicklinks.scrollLocation + 5;
     var currentLocation =  $( window ).scrollTop();
 
-    //return if within small buffer of +-5 from the elements scroll position
-    if ( currentLocation >= topScrollBuffer && currentLocation <= bottomScrollBuffer ) return;
+    //cancel if within small buffer of +-5px from the elements scroll position
+    if( currentLocation >= topScrollBuffer && currentLocation <= bottomScrollBuffer ) return;
 
-    if ( quicklinks.currEl ) {
+    if( quicklinks.currEl ){
       quicklinks.currEl.style.color = "#424242";
       quicklinks.currEl = undefined;
     }
 
-    if ( quicklinks.currLink ) {
+    if( quicklinks.currLink ){
       $( quicklinks.currLink ).removeClass( "quicklinks--selected" );
+
       quicklinks.currLink.style.borderColor = "#424242";
       quicklinks.currLink.style.color = "#424242";
       quicklinks.currLink = undefined;
