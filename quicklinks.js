@@ -4,9 +4,12 @@ quicklinks = {
     '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="59.951px" height="59.953px" viewBox="0 0 59.951 59.953" enable-background="new 0 0 59.951 59.953" xml:space="preserve"><g><g><path d="M14.341,37.396c9.767,0,19.533,0,29.3,0c3.225,0,3.225-5,0-5c-9.767,0-19.533,0-29.3,0C11.117,32.396,11.117,37.396,14.341,37.396L14.341,37.396z"/></g></g><g><g><path d="M28.892,46.396c4.917,0,9.833,0,14.749,0c3.225,0,3.225-5,0-5c-4.916,0-9.833,0-14.749,0C25.668,41.396,25.668,46.396,28.892,46.396L28.892,46.396z"/></g></g><g><g><path d="M23.091,28.396c6.85,0,13.7,0,20.55,0c3.225,0,3.225-5,0-5c-6.85,0-13.7,0-20.55,0C19.867,23.396,19.867,28.396,23.091,28.396L23.091,28.396z"/></g></g><g><g><path d="M14.341,19.396c9.767,0,19.533,0,29.3,0c3.225,0,3.225-5,0-5c-9.767,0-19.533,0-29.3,0C11.117,14.396,11.117,19.396,14.341,19.396L14.341,19.396z"/></g></g></svg>',
     '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="59.951px" height="59.953px" viewBox="0 0 59.951 59.953" enable-background="new 0 0 59.951 59.953" xml:space="preserve"><g><path d="M17.849,21.385c6.906,6.906,13.812,13.812,20.718,20.718c2.281,2.282,5.817-1.254,3.535-3.535c-6.906-6.906-13.812-13.813-20.718-20.718C19.103,15.568,15.567,19.104,17.849,21.385L17.849,21.385z"/></g><g><path d="M21.4,42.022c6.906-6.906,13.812-13.812,20.718-20.718c2.282-2.282-1.254-5.817-3.535-3.535c-6.906,6.906-13.812,13.812-20.718,20.718C15.583,40.769,19.118,44.304,21.4,42.022L21.4,42.022z"/></g></svg>'
   ],
-
+  currEl: undefined,
+  panelLinksClickable: false,
   panelVisible: false,
   timer: undefined,
+
+
 
   /**
    * Creates link panel and display button, prevents touch scrolling on panel from
@@ -42,9 +45,9 @@ quicklinks = {
     document.body.appendChild(this.panel);
     document.body.appendChild(this.button);
 
-    window.addEventListener('scroll', this.scrollReset);
+    window.addEventListener('scroll', this.resetHeaderAndLinkStyles);
 
-    this.pushHeaders();
+    this.createPanelLinks();
   },
 
 
@@ -52,7 +55,7 @@ quicklinks = {
   /**
    * Gets all header elements on page and gives class and listeners, also makes 'top' page link
    */
-  pushHeaders: function(){
+  createPanelLinks: function(){
     var pageHeaders = $("h1, h2, h3, h4, h5, h6").toArray();
 
     var topP = document.createElement("p");
@@ -60,7 +63,8 @@ quicklinks = {
     topP.innerHTML = 'Top';
 
     topP.addEventListener('click', function topLinkClickAnon(){
-      quicklinks.topLinkClick(topP);
+      //checks if links are clickable before calling function -- links are not clickable when panel is closing
+      if( quicklinks.panelLinksClickable ) quicklinks.topLinkClick(topP);
     });
 
     quicklinks.panel.appendChild(topP);
@@ -72,13 +76,16 @@ quicklinks = {
 
       (function(h,j){
         headerP.addEventListener('click', function headerLinkClickAnon(){
-          quicklinks.headerLinkClick(h,pageHeaders[j]);
+          //checks if links are clickable before calling function -- links are not clickable when panel is closing
+          if( quicklinks.panelLinksClickable ) quicklinks.panelLinkClick(h,pageHeaders[j]);
         });
       })(headerP, i);
 
       quicklinks.panel.appendChild(headerP);
     }
   },
+
+
 
   /**
    * Adds click listener to the 'top' link that is present in every quicklinks panel
@@ -96,8 +103,10 @@ quicklinks = {
     });
 
     quicklinks.scrollLocation = 0;
+
     quicklinks.changeSectionStyle( link, "top");
     quicklinks.changeLinkStyle( link );
+    this.fadePanelAfterClick();
   },
 
 
@@ -108,7 +117,7 @@ quicklinks = {
    * @param {object} link - Clickable link created in quicklinks panel
    * @param {object/string} el - Element associated with link that page will scroll to when link is clicked. Special case "top" goes to scroll position 0
    */
-  headerLinkClick: function(link, el){
+  panelLinkClick: function(link, el){
     var location = el.offsetTop - ( el.offsetHeight * 3 );
 
     el.style.color = this.color;
@@ -122,10 +131,12 @@ quicklinks = {
     });
 
     this.scrollLocation = location;
+
     this.changeSectionStyle(link, el);
     this.changeLinkStyle(link);
     this.fadePanelAfterClick();
   },
+
 
 
   /**
@@ -137,18 +148,21 @@ quicklinks = {
 
     this.timer = window.setTimeout(function(){
       quicklinks.closePanel(quicklinks.button);
-    },1000);
+    },1500);
   },
 
 
 
   /**
-   * Opens the mobile version of the quicklinks panel
+   * Opens the quicklinks panel
    *
    * @param  {object} el - Button that was touched/clicked
    */
   openPanel: function(el){
-    $( quicklinks.panel ).stop().fadeIn();
+    $( quicklinks.panel ).stop().fadeIn(function makeLinksClickableAnon(){
+      //after the panel is fully faded-in the links become clickable
+      quicklinks.panelLinksClickable = true;
+    });
 
     el.innerHTML = this.svgAssets[1];
     el.style.background = quicklinks.color;
@@ -160,11 +174,14 @@ quicklinks = {
 
 
   /**
-   * Closes the mobile version of the quicklinks panel
+   * Closes the quicklinks panel
    *
    * @param  {object} el - Button that was touched/clicked
    */
   closePanel: function(el){
+    //links are not clickable when the close process begins
+    this.panelLinksClickable = false;
+
     $( quicklinks.panel ).stop().fadeOut();
 
     el.innerHTML = this.svgAssets[0];
@@ -174,6 +191,7 @@ quicklinks = {
 
     quicklinks.panelVisible = false;
   },
+
 
 
   /**
@@ -228,7 +246,7 @@ quicklinks = {
   /**
    * Returns quicklink links and page header elements to default styling on scroll
    */
-  scrollReset: function() {
+  resetHeaderAndLinkStyles: function() {
     if( quicklinks.inMotion === true ) return;
 
     var topScrollBuffer = quicklinks.scrollLocation - 5;
@@ -251,5 +269,4 @@ quicklinks = {
       quicklinks.currLink = undefined;
     }
   },
-
 };
