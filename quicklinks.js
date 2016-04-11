@@ -6,6 +6,7 @@ quicklinks = {
   ],
 
   panelVisible: false,
+  timer: undefined,
 
   /**
    * Creates link panel and display button, prevents touch scrolling on panel from
@@ -29,9 +30,9 @@ quicklinks = {
 
     this.button.addEventListener('click', function quicklinksButtonClickAnon(){
       if ( quicklinks.panelVisible === false ) {
-        quicklinks.openMobileQuicklinks( this );
+        quicklinks.openPanel( this );
       } else {
-        quicklinks.closeMobileQuicklinks( this );
+        quicklinks.closePanel( this );
       }
     });
 
@@ -110,18 +111,33 @@ quicklinks = {
   headerLinkClick: function(link, el){
     var location = el.offsetTop - ( el.offsetHeight * 3 );
 
-    el.style.color = quicklinks.color;
+    el.style.color = this.color;
 
-    quicklinks.inMotion = true;
+    this.inMotion = true;
+
     $('html, body').stop().animate({
       scrollTop: location
     }, 500, function() {
       quicklinks.inMotion = false;
     });
 
-    quicklinks.scrollLocation = location;
-    quicklinks.changeSectionStyle( link, el );
-    quicklinks.changeLinkStyle( link );
+    this.scrollLocation = location;
+    this.changeSectionStyle(link, el);
+    this.changeLinkStyle(link);
+    this.fadePanelAfterClick();
+  },
+
+
+  /**
+   * Closes panel after user clicks link and waits a period of time. Each click
+   * resets the timer.
+   */
+  fadePanelAfterClick: function(){
+    window.clearTimeout(this.timer);
+
+    this.timer = window.setTimeout(function(){
+      quicklinks.closePanel(quicklinks.button);
+    },1000);
   },
 
 
@@ -131,7 +147,7 @@ quicklinks = {
    *
    * @param  {object} el - Button that was touched/clicked
    */
-  openMobileQuicklinks: function(el){
+  openPanel: function(el){
     $( quicklinks.panel ).stop().fadeIn();
 
     el.innerHTML = this.svgAssets[1];
@@ -148,7 +164,7 @@ quicklinks = {
    *
    * @param  {object} el - Button that was touched/clicked
    */
-  closeMobileQuicklinks: function(el){
+  closePanel: function(el){
     $( quicklinks.panel ).stop().fadeOut();
 
     el.innerHTML = this.svgAssets[0];
