@@ -114,7 +114,7 @@ quicklinks = {
 
     quicklinks.inMotion = true;
     $('html, body').stop().animate({
-        scrollTop: location
+      scrollTop: location
     }, 500, function() {
       quicklinks.inMotion = false;
     });
@@ -136,6 +136,7 @@ quicklinks = {
 
     el.innerHTML = this.svgAssets[1];
     el.style.background = quicklinks.color;
+    el.style.boxShadow = 'none';
 
     quicklinks.panelVisible = true;
   },
@@ -152,7 +153,8 @@ quicklinks = {
 
     el.innerHTML = this.svgAssets[0];
     $( el ).children('svg')[0].style.fill = quicklinks.color;
-    el.style.background = "white";
+    el.style.background = 'white';
+    el.style.boxShadow = '0px 3px 6px rgba(0,0,0,.5)';
 
     quicklinks.panelVisible = false;
   },

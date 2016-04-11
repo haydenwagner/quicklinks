@@ -5,23 +5,19 @@ $large-screen:  960px;
 
 
 .quicklinks {
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.5);
   cursor: pointer;
   min-width: 180px;
-   max-width: 300px;
-  // float: right;
-  // margin-top: 20px;
-  // z-index: 10;
-
+  max-width: 300px;
   display: none;
   bottom: 0px;
   top: none;
   position: fixed;
   bottom: 0px;
   right: 0px;
-  padding: 10px 20px 85px 20px;
+  padding: 10px 15px 85px 10px;
   background: white;
-  border-top: 3px solid #424242;
-  border-left: 3px solid #424242;
+  border-top: 3px solid #303030;
   max-height: 50%;
   overflow-y: auto;
 
@@ -32,7 +28,7 @@ $large-screen:  960px;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 
   @media screen and (max-width: $medium-screen) {
-    padding: 10px 20px 75px 20px;
+    padding: 10px 15px 75px 10px;
   }
 
   @media screen and (max-width: $small-screen) {
@@ -95,7 +91,6 @@ $large-screen:  960px;
     background: white;
     border-radius: 100%;
     box-shadow: 0px 3px 6px rgba(0,0,0,.5);
-    pointer-events: cursor;
     cursor: pointer;
     bottom: 30px;
     right: 30px;
