@@ -15,17 +15,12 @@ $large-screen:  960px;
   position: fixed;
   bottom: 0px;
   right: 0px;
-  padding: 10px 15px 85px 10px;
+  padding: 10px 15px 95px 10px;
   background: white;
   border-top: 3px solid #303030;
   max-height: 50%;
   overflow-y: auto;
 
-  -webkit-user-select: none; /* Chrome/Safari */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 
   @media screen and (max-width: $medium-screen) {
     padding: 10px 15px 75px 10px;
@@ -95,6 +90,12 @@ $large-screen:  960px;
     bottom: 30px;
     right: 30px;
     opacity: .95;
+
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 
     @media screen and (max-width: $medium-screen) {
       bottom: 15px;

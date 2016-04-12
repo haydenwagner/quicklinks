@@ -9,18 +9,11 @@
   position: fixed;
   bottom: 0px;
   right: 0px;
-  padding: 10px 15px 85px 10px;
+  padding: 10px 15px 95px 10px;
   background: white;
   border-top: 3px solid #303030;
   max-height: 50%;
-  overflow-y: auto;
-  -webkit-user-select: none;
-  /* Chrome/Safari */
-  -moz-user-select: none;
-  /* Firefox */
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent; }
+  overflow-y: auto; }
   @media screen and (max-width: 768px) {
     .quicklinks {
       padding: 10px 15px 75px 10px; } }
@@ -68,7 +61,14 @@
     cursor: pointer;
     bottom: 30px;
     right: 30px;
-    opacity: .95; }
+    opacity: .95;
+    -webkit-user-select: none;
+    /* Chrome/Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent; }
     @media screen and (max-width: 768px) {
       .quicklinks_mobile-button {
         bottom: 15px;

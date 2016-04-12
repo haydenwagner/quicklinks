@@ -118,7 +118,7 @@ quicklinks = {
    * @param {object/string} el - Element associated with link that page will scroll to when link is clicked. Special case "top" goes to scroll position 0
    */
   panelLinkClick: function(link, el){
-    var location = el.offsetTop - ( el.offsetHeight * 3 );
+    var location = el.offsetTop - ( el.offsetHeight * 5 );
 
     el.style.color = this.color;
 
