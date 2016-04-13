@@ -18,19 +18,33 @@ quicklinks = {
    * @param {string} color - accent color for quicklink button, link elements, and page elements
    */
   setUp: function(color){
+
+    //see if jquery is present and alert the user if it isn't
+    try {
+      $;
+    } catch (error) {
+      alert("quicklinks.js needs jQuery to work");
+      return;
+    }
+
+    //set the color property based on the argument passed by the user
     this.color = color;
 
+    //create the panel element that will hold the header links
     this.panel = document.createElement('div');
     this.panel.className = 'quicklinks';
 
+    //prevent dragging on the panel from scrolling the entire page
     this.panel.addEventListener('touchmove', function preventBodyScroll(e){
       e.preventDefault();
     }, false);
 
+    //create the display button and add the correct svg
     this.button = document.createElement('div');
     this.button.className = 'quicklinks_mobile-button';
     this.button.innerHTML = this.svgAssets[0];
 
+    //attach a listener on the button the opens or closes the panel
     this.button.addEventListener('click', function quicklinksButtonClickAnon(){
       if ( quicklinks.panelVisible === false ) {
         quicklinks.openPanel( this );
@@ -39,14 +53,18 @@ quicklinks = {
       }
     });
 
+    //save a reference to the svg and set its color
     this.svg = $( this.button ).children('svg').toArray()[0];
     this.svg.style.fill = this.color;
 
+    //append the panel and button to the DOM
     document.body.appendChild(this.panel);
     document.body.appendChild(this.button);
 
+    //add a listener to the window element that removes selected header and link styles
     window.addEventListener('scroll', this.resetHeaderAndLinkStyles);
 
+    //set up the rest of the panel elements
     this.createPanelLinks();
   },
 
@@ -106,7 +124,7 @@ quicklinks = {
 
     quicklinks.changeSectionStyle( link, "top");
     quicklinks.changeLinkStyle( link );
-    this.fadePanelAfterClick();
+    //this.fadePanelAfterClick();
   },
 
 
@@ -118,7 +136,8 @@ quicklinks = {
    * @param {object/string} el - Element associated with link that page will scroll to when link is clicked. Special case "top" goes to scroll position 0
    */
   panelLinkClick: function(link, el){
-    var location = el.offsetTop - ( el.offsetHeight * 5 );
+    var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    var location = el.offsetTop - windowHeight/6;//( el.offsetHeight * 5 );
 
     el.style.color = this.color;
 
@@ -134,7 +153,7 @@ quicklinks = {
 
     this.changeSectionStyle(link, el);
     this.changeLinkStyle(link);
-    this.fadePanelAfterClick();
+    //this.fadePanelAfterClick();
   },
 
 
