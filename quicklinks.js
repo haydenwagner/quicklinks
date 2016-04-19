@@ -20,13 +20,9 @@ quicklinks = {
   setUp: function(color){
 
     //see if jquery is present and alert the user if it isn't
-    try {
-      $;
-    } catch (error) {
-      alert("quicklinks.js needs jQuery to work");
-      return;
+    if( !$ ){
+      throw "Quicklinks needs jquery to work";
     }
-
     //set the color property based on the argument passed by the user
     this.color = color;
 
