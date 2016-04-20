@@ -32,6 +32,11 @@
 
 
 
+
+
+
+
+
   //set initial states of object
   prototype.currEl = undefined;
   prototype.panelLinksClickable = false;
@@ -69,14 +74,210 @@
     }
   });
 
+
+
+  /**
+   * Adds click listener to the 'top' link that is present in every quicklinks panel
+   *
+   * @param {object} link - Clickable link created in quicklinks panel
+   */
+  prototype.topLinkClick = function(link){
+    quicklinks.inMotion = true;
+
+    $('html, body').stop().animate({
+      scrollTop: 0
+    }, 500, function() {
+      quicklinks.inMotion = false;
+    });
+
+    quicklinks.scrollLocation = 0;
+
+    quicklinks.changeSectionStyle( link, "top");
+    quicklinks.changeLinkStyle( link );
+  };
+
+
+
+  /**
+   * Adds listeners to links created in quicklinks panel and associates a scroll location with each link's element.
+   *
+   * @param {object} link - Clickable link created in quicklinks panel
+   * @param {object/string} el - Element associated with link that page will scroll to when link is clicked. Special case "top" goes to scroll position 0
+   */
+  prototype.panelLinkClick = function(link, el){
+    var windowHeight, location;
+
+    windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    location = el.offsetTop - ( windowHeight / 6 );//( el.offsetHeight * 5 );
+
+    el.style.color = this.color;
+
+    this.inMotion = true;
+
+    $('html, body').stop().animate({
+      scrollTop: location
+    }, 500, function() {
+      quicklinks.inMotion = false;
+    });
+
+    this.scrollLocation = location;
+
+    this.changeSectionStyle(link, el);
+    this.changeLinkStyle(link);
+  };
+
+
+
+  /**
+   * Closes panel after user clicks link and waits a period of time. Each click
+   * resets the timer.
+   */
+  prototype.fadePanelAfterClick = function(){
+    window.clearTimeout(this.timer);
+
+    this.timer = window.setTimeout(function(){
+      quicklinks.closePanel(quicklinks.button);
+    },1500);
+  };
+
+
+
+  /**
+   * Opens the quicklinks panel
+   *
+   * @param  {object} el - Button that was touched/clicked
+   */
+  prototype.openPanel = function(el){
+    $( quicklinks.panel ).stop().fadeIn(function makeLinksClickableAnon(){
+      //after the panel is fully faded-in the links become clickable
+      quicklinks.panelLinksClickable = true;
+    });
+
+    el.innerHTML = this.svgAssets[1];
+    el.style.background = quicklinks.color;
+    el.style.boxShadow = 'none';
+
+    quicklinks.panelVisible = true;
+  };
+
+
+
+  /**
+   * Closes the quicklinks panel
+   *
+   * @param  {object} el - Button that was touched/clicked
+   */
+  prototype.closePanel = function(el){
+    //links are not clickable when the close process begins
+    this.panelLinksClickable = false;
+
+    $( quicklinks.panel ).stop().fadeOut();
+
+    el.innerHTML = this.svgAssets[0];
+    $( el ).children('svg')[0].style.fill = quicklinks.color;
+    el.style.background = 'white';
+    el.style.boxShadow = '0px 3px 6px rgba(0,0,0,.5)';
+
+    quicklinks.panelVisible = false;
+  };
+
+
+
+  /**
+   * Changes the styling of header elements on the page, and updates the currentEl
+   * property of the quicklinks object. No header element style change for a 'top selection'
+   *
+   * @param  {object} link - Link touched/clicked in quicklinks panel
+   * @param  {object/string} el - Element associated with touched/clicked link, or "top"
+   */
+  prototype.changeSectionStyle = function(link, el){
+    if( el === "top"){
+      if( quicklinks.currEl ){
+        quicklinks.currEl.style.color = "#424242";
+        quicklinks.currEl = undefined;
+      }else{
+        quicklinks.currEl = undefined;
+      }
+    }
+    else{
+      if( quicklinks.currEl ){
+        quicklinks.currEl.style.color = "#424242";
+        quicklinks.currEl = el;
+      }else{
+        quicklinks.currEl = el;
+      }
+    }
+  };
+
+
+
+  /**
+   * Changes the quicklinks link styles if a link is touched/clicked
+   *
+   * @param  {object} el - The touched/clicked quicklinks link
+   */
+  prototype.changeLinkStyle = function(el){
+    if( quicklinks.currLink ){
+      $( quicklinks.currLink ).removeClass( "quicklinks--selected" );
+      quicklinks.currLink.style.borderColor = "#424242";
+      quicklinks.currLink.style.color = "#424242";
+    }
+
+    el.className += " quicklinks--selected";
+    el.style.borderColor = quicklinks.color;
+    el.style.color = quicklinks.color;
+
+    quicklinks.currLink = el;
+  };
+
+
+
+  /**
+   * Returns quicklink links and page header elements to default styling on scroll
+   */
+  prototype.resetHeaderAndLinkStyles = function() {
+    if( quicklinks.inMotion === true ) return;
+
+    var topScrollBuffer = quicklinks.scrollLocation - 5;
+    var bottomScrollBuffer = quicklinks.scrollLocation + 5;
+    var currentLocation =  $( window ).scrollTop();
+
+    //cancel if within small buffer of +-5px from the elements scroll position
+    if( currentLocation >= topScrollBuffer && currentLocation <= bottomScrollBuffer ) return;
+
+    if( quicklinks.currEl ){
+      quicklinks.currEl.style.color = "#424242";
+      quicklinks.currEl = undefined;
+    }
+
+    if( quicklinks.currLink ){
+      $( quicklinks.currLink ).removeClass( "quicklinks--selected" );
+
+      quicklinks.currLink.style.borderColor = "#424242";
+      quicklinks.currLink.style.color = "#424242";
+      quicklinks.currLink = undefined;
+    }
+  };
+
+
+
+
+
+
+
+
+
+
   //add a listener to the window element that removes selected header and link styles
   window.addEventListener('scroll', this.resetHeaderAndLinkStyles);
+
+
 
 
   /**
   * Gets all header elements on page and gives class and listeners, also makes 'top' page link
   */
-  function quicklinksCreatePanelLinks(){
+  (function quicklinksCreatePanelLinks(){
     var pageHeaders, topP;
 
     pageHeaders = $("h1, h2, h3, h4, h5, h6").toArray();
@@ -106,7 +307,9 @@
 
       quicklinks.panel.appendChild(headerP);
     }
-  }
+  })();
+
+
 
 
 
@@ -192,222 +395,222 @@ quicklinks = {
 
 
 
-  /**
-   * Gets all header elements on page and gives class and listeners, also makes 'top' page link
-   */
-  createPanelLinks: function(){
-    var pageHeaders = $("h1, h2, h3, h4, h5, h6").toArray();
+  // /**
+  //  * Gets all header elements on page and gives class and listeners, also makes 'top' page link
+  //  */
+  // createPanelLinks: function(){
+  //   var pageHeaders = $("h1, h2, h3, h4, h5, h6").toArray();
 
-    var topP = document.createElement("p");
-    topP.className = 'quicklinks_top';
-    topP.innerHTML = 'Top';
+  //   var topP = document.createElement("p");
+  //   topP.className = 'quicklinks_top';
+  //   topP.innerHTML = 'Top';
 
-    topP.addEventListener('click', function topLinkClickAnon(){
-      //checks if links are clickable before calling function -- links are not clickable when panel is closing
-      if( quicklinks.panelLinksClickable ) quicklinks.topLinkClick(topP);
-    });
+  //   topP.addEventListener('click', function topLinkClickAnon(){
+  //     //checks if links are clickable before calling function -- links are not clickable when panel is closing
+  //     if( quicklinks.panelLinksClickable ) quicklinks.topLinkClick(topP);
+  //   });
 
-    quicklinks.panel.appendChild(topP);
+  //   quicklinks.panel.appendChild(topP);
 
-    for ( var i = 0; i < pageHeaders.length; i++ ) {
-      var headerP = document.createElement("p");
-      headerP.className = "quicklinks_" + pageHeaders[i].localName;
-      headerP.innerHTML = pageHeaders[i].innerHTML;
+  //   for ( var i = 0; i < pageHeaders.length; i++ ) {
+  //     var headerP = document.createElement("p");
+  //     headerP.className = "quicklinks_" + pageHeaders[i].localName;
+  //     headerP.innerHTML = pageHeaders[i].innerHTML;
 
-      (function(h,j){
-        headerP.addEventListener('click', function headerLinkClickAnon(){
-          //checks if links are clickable before calling function -- links are not clickable when panel is closing
-          if( quicklinks.panelLinksClickable ) quicklinks.panelLinkClick(h,pageHeaders[j]);
-        });
-      })(headerP, i);
+  //     (function(h,j){
+  //       headerP.addEventListener('click', function headerLinkClickAnon(){
+  //         //checks if links are clickable before calling function -- links are not clickable when panel is closing
+  //         if( quicklinks.panelLinksClickable ) quicklinks.panelLinkClick(h,pageHeaders[j]);
+  //       });
+  //     })(headerP, i);
 
-      quicklinks.panel.appendChild(headerP);
-    }
-  },
-
-
-
-  /**
-   * Adds click listener to the 'top' link that is present in every quicklinks panel
-   *
-   * @param {object} link - Clickable link created in quicklinks panel
-   * @param {object/string} el - Element associated with link that page will scroll to when link is clicked
-   */
-  topLinkClick: function(link){
-    quicklinks.inMotion = true;
-
-    $('html, body').stop().animate({
-      scrollTop: 0
-    }, 500, function() {
-      quicklinks.inMotion = false;
-    });
-
-    quicklinks.scrollLocation = 0;
-
-    quicklinks.changeSectionStyle( link, "top");
-    quicklinks.changeLinkStyle( link );
-    //this.fadePanelAfterClick();
-  },
+  //     quicklinks.panel.appendChild(headerP);
+  //   }
+  // },
 
 
 
-  /**
-   * Adds listeners to links created in quicklinks panel and associates a scroll location with each link's element.
-   *
-   * @param {object} link - Clickable link created in quicklinks panel
-   * @param {object/string} el - Element associated with link that page will scroll to when link is clicked. Special case "top" goes to scroll position 0
-   */
-  panelLinkClick: function(link, el){
-    var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    var location = el.offsetTop - windowHeight/6;//( el.offsetHeight * 5 );
+  // /**
+  //  * Adds click listener to the 'top' link that is present in every quicklinks panel
+  //  *
+  //  * @param {object} link - Clickable link created in quicklinks panel
+  //  * @param {object/string} el - Element associated with link that page will scroll to when link is clicked
+  //  */
+  // topLinkClick: function(link){
+  //   quicklinks.inMotion = true;
 
-    el.style.color = this.color;
+  //   $('html, body').stop().animate({
+  //     scrollTop: 0
+  //   }, 500, function() {
+  //     quicklinks.inMotion = false;
+  //   });
 
-    this.inMotion = true;
+  //   quicklinks.scrollLocation = 0;
 
-    $('html, body').stop().animate({
-      scrollTop: location
-    }, 500, function() {
-      quicklinks.inMotion = false;
-    });
-
-    this.scrollLocation = location;
-
-    this.changeSectionStyle(link, el);
-    this.changeLinkStyle(link);
-    //this.fadePanelAfterClick();
-  },
+  //   quicklinks.changeSectionStyle( link, "top");
+  //   quicklinks.changeLinkStyle( link );
+  //   //this.fadePanelAfterClick();
+  // },
 
 
 
-  /**
-   * Closes panel after user clicks link and waits a period of time. Each click
-   * resets the timer.
-   */
-  fadePanelAfterClick: function(){
-    window.clearTimeout(this.timer);
+  // /**
+  //  * Adds listeners to links created in quicklinks panel and associates a scroll location with each link's element.
+  //  *
+  //  * @param {object} link - Clickable link created in quicklinks panel
+  //  * @param {object/string} el - Element associated with link that page will scroll to when link is clicked. Special case "top" goes to scroll position 0
+  //  */
+  // panelLinkClick: function(link, el){
+  //   var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+  //   var location = el.offsetTop - windowHeight/6;//( el.offsetHeight * 5 );
 
-    this.timer = window.setTimeout(function(){
-      quicklinks.closePanel(quicklinks.button);
-    },1500);
-  },
+  //   el.style.color = this.color;
 
+  //   this.inMotion = true;
 
+  //   $('html, body').stop().animate({
+  //     scrollTop: location
+  //   }, 500, function() {
+  //     quicklinks.inMotion = false;
+  //   });
 
-  /**
-   * Opens the quicklinks panel
-   *
-   * @param  {object} el - Button that was touched/clicked
-   */
-  openPanel: function(el){
-    $( quicklinks.panel ).stop().fadeIn(function makeLinksClickableAnon(){
-      //after the panel is fully faded-in the links become clickable
-      quicklinks.panelLinksClickable = true;
-    });
+  //   this.scrollLocation = location;
 
-    el.innerHTML = this.svgAssets[1];
-    el.style.background = quicklinks.color;
-    el.style.boxShadow = 'none';
-
-    quicklinks.panelVisible = true;
-  },
+  //   this.changeSectionStyle(link, el);
+  //   this.changeLinkStyle(link);
+  //   //this.fadePanelAfterClick();
+  // },
 
 
 
-  /**
-   * Closes the quicklinks panel
-   *
-   * @param  {object} el - Button that was touched/clicked
-   */
-  closePanel: function(el){
-    //links are not clickable when the close process begins
-    this.panelLinksClickable = false;
+  // /**
+  //  * Closes panel after user clicks link and waits a period of time. Each click
+  //  * resets the timer.
+  //  */
+  // fadePanelAfterClick: function(){
+  //   window.clearTimeout(this.timer);
 
-    $( quicklinks.panel ).stop().fadeOut();
-
-    el.innerHTML = this.svgAssets[0];
-    $( el ).children('svg')[0].style.fill = quicklinks.color;
-    el.style.background = 'white';
-    el.style.boxShadow = '0px 3px 6px rgba(0,0,0,.5)';
-
-    quicklinks.panelVisible = false;
-  },
+  //   this.timer = window.setTimeout(function(){
+  //     quicklinks.closePanel(quicklinks.button);
+  //   },1500);
+  // },
 
 
 
-  /**
-   * Changes the styling of header elements on the page, and updates the currentEl
-   * property of the quicklinks object. No header element style change for a 'top selection'
-   *
-   * @param  {object} link - Link touched/clicked in quicklinks panel
-   * @param  {object/string} el - Element associated with touched/clicked link, or "top"
-   */
-  changeSectionStyle: function(link, el){
-    if( el === "top"){
-      if( quicklinks.currEl ){
-        quicklinks.currEl.style.color = "#424242";
-        quicklinks.currEl = undefined;
-      }else{
-        quicklinks.currEl = undefined;
-      }
-    }
-    else{
-      if( quicklinks.currEl ){
-        quicklinks.currEl.style.color = "#424242";
-        quicklinks.currEl = el;
-      }else{
-        quicklinks.currEl = el;
-      }
-    }
-  },
+  // /**
+  //  * Opens the quicklinks panel
+  //  *
+  //  * @param  {object} el - Button that was touched/clicked
+  //  */
+  // openPanel: function(el){
+  //   $( quicklinks.panel ).stop().fadeIn(function makeLinksClickableAnon(){
+  //     //after the panel is fully faded-in the links become clickable
+  //     quicklinks.panelLinksClickable = true;
+  //   });
+
+  //   el.innerHTML = this.svgAssets[1];
+  //   el.style.background = quicklinks.color;
+  //   el.style.boxShadow = 'none';
+
+  //   quicklinks.panelVisible = true;
+  // },
 
 
 
-  /**
-   * Changes the quicklinks link styles if a link is touched/clicked
-   *
-   * @param  {object} el - The touched/clicked quicklinks link
-   */
-  changeLinkStyle: function(el){
-    if( quicklinks.currLink ){
-      $( quicklinks.currLink ).removeClass( "quicklinks--selected" );
-      quicklinks.currLink.style.borderColor = "#424242";
-      quicklinks.currLink.style.color = "#424242";
-    }
+  // /**
+  //  * Closes the quicklinks panel
+  //  *
+  //  * @param  {object} el - Button that was touched/clicked
+  //  */
+  // closePanel: function(el){
+  //   //links are not clickable when the close process begins
+  //   this.panelLinksClickable = false;
 
-    el.className += " quicklinks--selected";
-    el.style.borderColor = quicklinks.color;
-    el.style.color = quicklinks.color;
+  //   $( quicklinks.panel ).stop().fadeOut();
 
-    quicklinks.currLink = el;
-  },
+  //   el.innerHTML = this.svgAssets[0];
+  //   $( el ).children('svg')[0].style.fill = quicklinks.color;
+  //   el.style.background = 'white';
+  //   el.style.boxShadow = '0px 3px 6px rgba(0,0,0,.5)';
+
+  //   quicklinks.panelVisible = false;
+  // },
 
 
 
-  /**
-   * Returns quicklink links and page header elements to default styling on scroll
-   */
-  resetHeaderAndLinkStyles: function() {
-    if( quicklinks.inMotion === true ) return;
+  // /**
+  //  * Changes the styling of header elements on the page, and updates the currentEl
+  //  * property of the quicklinks object. No header element style change for a 'top selection'
+  //  *
+  //  * @param  {object} link - Link touched/clicked in quicklinks panel
+  //  * @param  {object/string} el - Element associated with touched/clicked link, or "top"
+  //  */
+  // changeSectionStyle: function(link, el){
+  //   if( el === "top"){
+  //     if( quicklinks.currEl ){
+  //       quicklinks.currEl.style.color = "#424242";
+  //       quicklinks.currEl = undefined;
+  //     }else{
+  //       quicklinks.currEl = undefined;
+  //     }
+  //   }
+  //   else{
+  //     if( quicklinks.currEl ){
+  //       quicklinks.currEl.style.color = "#424242";
+  //       quicklinks.currEl = el;
+  //     }else{
+  //       quicklinks.currEl = el;
+  //     }
+  //   }
+  // },
 
-    var topScrollBuffer = quicklinks.scrollLocation - 5;
-    var bottomScrollBuffer = quicklinks.scrollLocation + 5;
-    var currentLocation =  $( window ).scrollTop();
 
-    //cancel if within small buffer of +-5px from the elements scroll position
-    if( currentLocation >= topScrollBuffer && currentLocation <= bottomScrollBuffer ) return;
 
-    if( quicklinks.currEl ){
-      quicklinks.currEl.style.color = "#424242";
-      quicklinks.currEl = undefined;
-    }
+  // /**
+  //  * Changes the quicklinks link styles if a link is touched/clicked
+  //  *
+  //  * @param  {object} el - The touched/clicked quicklinks link
+  //  */
+  // changeLinkStyle: function(el){
+  //   if( quicklinks.currLink ){
+  //     $( quicklinks.currLink ).removeClass( "quicklinks--selected" );
+  //     quicklinks.currLink.style.borderColor = "#424242";
+  //     quicklinks.currLink.style.color = "#424242";
+  //   }
 
-    if( quicklinks.currLink ){
-      $( quicklinks.currLink ).removeClass( "quicklinks--selected" );
+  //   el.className += " quicklinks--selected";
+  //   el.style.borderColor = quicklinks.color;
+  //   el.style.color = quicklinks.color;
 
-      quicklinks.currLink.style.borderColor = "#424242";
-      quicklinks.currLink.style.color = "#424242";
-      quicklinks.currLink = undefined;
-    }
-  },
+  //   quicklinks.currLink = el;
+  // },
+
+
+
+  // /**
+  //  * Returns quicklink links and page header elements to default styling on scroll
+  //  */
+  // resetHeaderAndLinkStyles: function() {
+  //   if( quicklinks.inMotion === true ) return;
+
+  //   var topScrollBuffer = quicklinks.scrollLocation - 5;
+  //   var bottomScrollBuffer = quicklinks.scrollLocation + 5;
+  //   var currentLocation =  $( window ).scrollTop();
+
+  //   //cancel if within small buffer of +-5px from the elements scroll position
+  //   if( currentLocation >= topScrollBuffer && currentLocation <= bottomScrollBuffer ) return;
+
+  //   if( quicklinks.currEl ){
+  //     quicklinks.currEl.style.color = "#424242";
+  //     quicklinks.currEl = undefined;
+  //   }
+
+  //   if( quicklinks.currLink ){
+  //     $( quicklinks.currLink ).removeClass( "quicklinks--selected" );
+
+  //     quicklinks.currLink.style.borderColor = "#424242";
+  //     quicklinks.currLink.style.color = "#424242";
+  //     quicklinks.currLink = undefined;
+  //   }
+  // },
 };
