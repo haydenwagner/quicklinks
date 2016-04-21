@@ -15,8 +15,8 @@
     "lint": "echo 'linting' && jshint assets/scripts/main.js",
     "test": "echo 'testing' && mocha test/",
     "bundle:js": "echo 'bundling' && browserify assets/scripts/main.js -o assets/scripts/bundle.js",
-    "minify:js": "echo 'minify:js' && uglifyjs assets/scripts/bundle.js -o dist/public/js/main.min.js",
-    "minify:css": "echo 'minify:css' && cleancss assets/css/main.css -o dist/public/css/main.min.css && cleancss assets/css/demo_styles.css -o dist/public/css/demo_styles.min.css",
+    "minify:js": "echo 'minify:js' && uglifyjs assets/scripts/bundle.js -o dist/public/js/quicklinks.min.js",
+    "minify:css": "echo 'minify:css' && cleancss assets/css/main.css -o dist/public/css/quicklinks.min.css && cleancss assets/css/demo_styles.css -o dist/public/css/quicklinks_demo_styles.min.css",
     "pretest": "npm run lint -s",
     "posttest": "npm run bundle:js && npm run minify:js && npm run minify:css"
   },
