@@ -5,13 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Quicklinks Demo</title>
-    <link rel="stylesheet" type="text/css" href="css/demo_styles.min.css"/>
-    <link rel="stylesheet" type="text/css" href="css/main.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/demo_styles.css"/>
+    <link rel="stylesheet" type="text/css" href="css/main.css"/>
     <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
-    <script src="js/main.min.js"></script>
+    <script src="scripts/main.js"></script>
   </head>
 
-  <body>
+  <body onload="loaded();">
 
     <div class="container">
       <p class="display">The&nbsp;Hounds of&nbsp;Baskerville</p>
@@ -64,6 +64,8 @@
 
   </body>
   <script>
-    quicklinksInit('#2CE8C9');
+    function loaded(){
+      quicklinksInit('#2CE8C9');
+    }
   </script>
 </html>

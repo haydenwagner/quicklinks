@@ -1,26 +1,4 @@
-@font-face {
-  font-family: 'Lato';
-  font-style: normal;
-  font-weight: 400;
-  src: url("../fonts/LatoLatin-Regular.ttf") format("truetype"); }
-@font-face {
-  font-family: 'Raleway';
-  src: url("../fonts/Raleway-Regular.ttf") format("truetype");
-  /* IE6-IE8 */
-  font-style: normal;
-  font-weight: 400; }
-@font-face {
-  font-family: 'Raleway';
-  src: url("../fonts/Raleway-Medium.ttf") format("truetype");
-  /* IE6-IE8 */
-  font-style: normal;
-  font-weight: 500; }
-@font-face {
-  font-family: 'Raleway';
-  src: url("../fonts/Raleway-Bold.ttf") format("truetype");
-  /* IE6-IE8 */
-  font-style: normal;
-  font-weight: 700; }
+
 a {
   text-decoration: none; }
 
