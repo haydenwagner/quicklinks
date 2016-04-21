@@ -295,7 +295,7 @@
       if (quicklinksObject.panelLinksClickable) quicklinksObject.topLinkClick(topP);
     });
 
-    this.panel.appendChild(topP);
+    quicklinksObject.panel.appendChild(topP);
 
     //loops through all of the HTML header elements and creates a panel link and attaches a click listener
     for ( var i = 0; i < pageHeaders.length; i++ ) {
@@ -307,7 +307,7 @@
       //click listener that will allow the user to interact with the link in the panel
       headerP.addEventListener('click', makeHeaderClickHandler(headerP, i));
 
-      this.panel.appendChild(headerP);
+      quicklinksObject.panel.appendChild(headerP);
     }
 
     function makeHeaderClickHandler(headerP, pos){

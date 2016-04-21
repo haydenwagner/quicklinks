@@ -11,10 +11,10 @@
     <script src="js/main.min.js"></script>
   </head>
 
-  <body>
+  <body onload="loaded();">
 
     <div class="container">
-      <p class="display">The&nbsp;Hounds of&nbsp;Baskerville</p>
+      <p class="display">The Hounds of Baskerville</p>
 
       <p>Arthur Conan Doyle</p>
 
@@ -61,9 +61,11 @@
       <p>I asked with some self importance. ‘I trust that there is nothing of consequence which I have overlooked?’</p>
 
     </div>
-
   </body>
   <script>
-    quicklinksInit('#2CE8C9');
+    function loaded(){
+      //initialize the quicklinks plugin --- pass a color string argument (hex,rgb,rgba)
+      quicklinksInit('#2CE8C9');
+    }
   </script>
 </html>
