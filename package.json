@@ -21,8 +21,5 @@
     "posttest": "npm run bundle:js && npm run minify:js && npm run minify:css"
   },
   "author": "Hayden Wagner",
-  "license": "ISC",
-  "jshintConfig": {
-    "loopfunc": true
-  }
+  "license": "ISC"
 }
