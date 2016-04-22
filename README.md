@@ -1,5 +1,6 @@
 # quicklinks
 JavaScript plugin that allows users to quickly move between headings on a webpage
+* Demo page: http://www.haydenwagner.com/github_quicklinks/
 
 ### What does quicklinks do?
 * Adds a display button and a panel that will be filled with links to the DOM 
