@@ -11,7 +11,7 @@
     <script src="scripts/main.js"></script>
   </head>
 
-  <body onload="loaded();">
+  <body>
 
     <div class="container">
       <p class="display">The Hounds of Baskerville</p>
@@ -63,9 +63,9 @@
     </div>
   </body>
   <script>
-    function loaded(){
+    $( document ).ready(function(){
       //initialize the quicklinks plugin --- pass a color string argument (hex,rgb,rgba)
       quicklinksInit('#2CE8C9');
-    }
+    });
   </script>
 </html>
