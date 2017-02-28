@@ -1,3 +1,5 @@
+**This code is really not that useful. I made this as an undergraduate for jQuery practice. I think it could be more useful if paired with Tether.io and made into pure javascript for scrolling between page elements (no jQuery dependency)**
+
 # quicklinks
 JavaScript plugin that allows users to quickly move between headings on a webpage
 * Demo page: http://www.haydenwagner.com/github_quicklinks/
